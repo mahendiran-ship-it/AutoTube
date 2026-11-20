@@ -1,0 +1,56 @@
+# Channel identity. Fully editable (also via the dashboard).
+name: "Cosmic Unknown"
+tagline: "The universe, one unanswered question at a time."
+niche: "Space, astronomy, cosmic mysteries, black holes, planets, galaxies, time, astrophysics, strange discoveries, unanswered scientific questions"
+language: en
+audience: "Global audience"
+timezone: "Asia/Kolkata"
+content_style: "Cinematic documentary storytelling"
+narration_style: "Deep, engaging documentary voice"
+
+format:
+  primary: shorts              # shorts | long
+  short_seconds: { min: 30, max: 58, target: 45 }
+  long_seconds:  { min: 300, max: 480, target: 400 }   # future: 5–8 min documentaries
+
+strategy:
+  shorts_first_days: 30
+  videos_per_day: 1
+  # Longer videos are only RECOMMENDED after real analytics support it.
+  longform_after: { min_shorts: 25, min_avg_view_percentage: 70 }
+
+branding:
+  accent_color: "#FFB020"
+  secondary_color: "#3AA0FF"
+  background_color: "#05060F"
+  watermark_text: "COSMIC UNKNOWN"
+
+# Topic categories (used for scoring, visuals and the performance optimizer).
+categories:
+  black_holes:   [black hole, event horizon, singularity, hawking, accretion, quasar, spaghettification]
+  planets:       [planet, exoplanet, mars, jupiter, saturn, venus, mercury, neptune, uranus, moon, europa, titan, enceladus]
+  galaxies:      [galaxy, milky way, andromeda, cluster, dark matter, spiral, cosmic web, void]
+  stars:         [star, supernova, neutron star, pulsar, magnetar, betelgeuse, red giant, white dwarf, nova]
+  time_space:    [time, spacetime, relativity, einstein, gravitational wave, wormhole, big bang, universe expansion, dark energy]
+  mysteries:     [mystery, unexplained, anomaly, puzzling, unknown, strange, signal, fast radio burst, oumuamua]
+  missions:      [mission, telescope, rover, probe, jwst, webb, hubble, voyager, artemis, launch, spacecraft, iss]
+  solar_system:  [sun, solar, comet, asteroid, meteor, eclipse, aurora, solar flare, kuiper, oort]
+
+# Safety rails for topic selection (substring match, case-insensitive).
+blocked_terms:
+  - aliens confirmed
+  - nasa is hiding
+  - nasa hiding
+  - doomsday
+  - end of the world
+  - conspiracy
+  - flat earth
+  - nibiru
+  - apocalypse date
+  - ufo cover-up
+
+hashtags:
+  base: ["#Space", "#Astronomy"]
+  shorts: "#Shorts"
+
+description_footer: "Cosmic Unknown explores real space science. Scientific claims are drawn from the sources listed above; uncertainty is stated where it exists."

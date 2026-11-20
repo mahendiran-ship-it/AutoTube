@@ -1,0 +1,61 @@
+# Research sources. Every entry can be disabled or removed — nothing depends on
+# a single site. If one fails, the others are still used.
+#
+# NOTE: feed URLs change over time. Run `python main.py check-sources` to test
+# them from YOUR machine and disable/replace any that fail.
+#
+# reliability: high   = agency / institution / peer-reviewed press release
+#              medium = established science journalism
+#              low    = preprints, aggregators (research SIGNAL only)
+
+feeds:
+  - { id: nasa_news,     name: "NASA News",                 url: "https://www.nasa.gov/feed/",                                 reliability: high,   enabled: true,  categories: [missions, solar_system, planets] }
+  - { id: jpl_news,      name: "NASA JPL News",             url: "https://www.jpl.nasa.gov/feeds/news",                        reliability: high,   enabled: true,  categories: [missions, planets] }
+  - { id: esa_science,   name: "ESA Space Science",         url: "https://www.esa.int/rssfeed/Our_Activities/Space_Science",   reliability: high,   enabled: true,  categories: [missions, stars, galaxies] }
+  - { id: eso_news,      name: "ESO Press Releases",        url: "https://www.eso.org/public/news/feed/",                      reliability: high,   enabled: true,  categories: [galaxies, stars, black_holes] }
+  - { id: sciencedaily,  name: "ScienceDaily — Space & Time", url: "https://www.sciencedaily.com/rss/space_time.xml",          reliability: medium, enabled: true,  categories: [] }
+  - { id: physorg_space, name: "Phys.org — Space News",     url: "https://phys.org/rss-feed/space-news/",                      reliability: medium, enabled: true,  categories: [] }
+  - { id: universetoday, name: "Universe Today",            url: "https://www.universetoday.com/feed",                         reliability: medium, enabled: true,  categories: [] }
+  - { id: spacecom,      name: "Space.com",                 url: "https://www.space.com/feeds/all",                            reliability: medium, enabled: true,  categories: [] }
+  - { id: skytelescope,  name: "Sky & Telescope",           url: "https://skyandtelescope.org/feed/",                          reliability: medium, enabled: true,  categories: [] }
+  - { id: earthsky,      name: "EarthSky",                  url: "https://earthsky.org/feed/",                                 reliability: medium, enabled: false, categories: [] }
+  - { id: arxiv_astro,   name: "arXiv astro-ph (preprints)", url: "https://rss.arxiv.org/rss/astro-ph",                        reliability: low,    enabled: false, categories: [] }
+
+# REAL trend data: Wikimedia daily pageviews for a watchlist of articles.
+# A topic is only labelled a "trend" when its measured spike ratio passes the
+# threshold in settings.yaml. Everything else stays a "research signal".
+trend_sources:
+  wikipedia_pageviews:
+    enabled: true
+    project: en.wikipedia
+    watchlist:
+      - Black hole
+      - Event horizon
+      - Hawking radiation
+      - Dark matter
+      - Dark energy
+      - Betelgeuse
+      - Supernova
+      - Neutron star
+      - Magnetar
+      - Fast radio burst
+      - Gravitational wave
+      - Europa (moon)
+      - Titan (moon)
+      - Enceladus
+      - James Webb Space Telescope
+      - Milky Way
+      - Andromeda Galaxy
+      - Sagittarius A*
+      - Wormhole
+      - Big Bang
+      - Time dilation
+      - "'Oumuamua"
+      - Fermi paradox
+      - Voyager 1
+      - Pulsar
+
+# Reference sources used by the research engine for corroboration.
+reference_sources:
+  wikipedia: { enabled: true, reliability: medium }
+  nasa_images_metadata: { enabled: true, reliability: high }

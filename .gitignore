@@ -1,0 +1,43 @@
+# Secrets — never commit
+.env
+*.pem
+client_secret*.json
+token*.json
+data/secrets/
+
+# Local state & generated output
+data/*
+!data/.gitkeep
+output/*
+!output/.gitkeep
+config/local.yaml
+*.db
+*.db-wal
+*.db-shm
+
+# User-supplied media (licenses are the user's responsibility)
+assets/music/*
+!assets/music/README.md
+!assets/music/library.example.yaml
+assets/sfx/generated/
+assets/fonts/*
+!assets/fonts/README.md
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

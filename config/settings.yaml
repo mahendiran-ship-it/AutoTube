@@ -1,0 +1,283 @@
+# AutoTube AI — system settings.
+# Edit here, or from the dashboard (Settings tab), which writes overrides to
+# config/local.yaml (git-ignored). Secrets NEVER go in this file — use .env.
+
+app:
+  name: "AutoTube AI"
+
+paths:
+  data_dir: data
+  output_dir: output
+  assets_dir: assets
+  secrets_dir: data/secrets
+  logs_dir: data/logs
+
+database:
+  path: data/autotube.db
+
+logging:
+  level: INFO
+  console: true
+  json_file: true
+  max_bytes: 5242880
+  backups: 5
+
+pipeline:
+  # MANUAL : you approve the topic, the script AND the upload.
+  # REVIEW : pipeline runs fully, then waits for your approval before upload.
+  # PRIVATE: uploads automatically but ONLY as a private video (no scheduling).
+  # AUTO   : uploads and schedules qualified videos with no human step.
+  publishing_mode: REVIEW
+  max_stage_retries: 2
+  retry_backoff_seconds: 20
+  max_qc_repair_attempts: 1
+  min_free_disk_gb: 3
+  # Videos built from the extractive (no-LLM) fallback are never auto-published.
+  block_auto_publish_for_fallback_content: true
+
+schedule:
+  production_time: "10:00"     # when the daily pipeline starts (channel timezone)
+  publish_time: "18:30"        # target publish time (channel timezone)
+  analytics_time: "08:00"
+  weekly_report_weekday: 0     # 0 = Monday
+  publish_min_lead_minutes: 20 # never schedule closer than this to "now"
+  videos_per_day: 1
+  tick_seconds: 30
+
+automation:
+  enabled: false               # master switch (dashboard: Automation > Start)
+
+ai:
+  # Order matters: first healthy provider wins, the rest are fallbacks.
+  fallback_order: [ollama, llamacpp]
+  max_attempts_per_call: 2     # total tries across providers (no endless switching)
+  health_cache_seconds: 60
+  temperature: 0.7
+  providers:
+    ollama:
+      type: ollama
+      enabled: true
+      host: "http://localhost:11434"   # env OLLAMA_HOST overrides
+      model: "llama3.1:8b"
+      timeout_seconds: 300
+      paid: false
+    llamacpp:
+      type: openai_compatible          # llama.cpp `llama-server`, LM Studio, vLLM, ...
+      enabled: false
+      base_url: "http://localhost:8080/v1"
+      model: "local"
+      api_key_env: LLM_API_KEY
+      timeout_seconds: 300
+      paid: false
+  # When NO LLM is reachable the pipeline can still produce a *plain,
+  # source-extractive* video. It is clearly flagged and never auto-published.
+  allow_extractive_fallback: true
+  # Approx. RAM a model needs before we warn (GB). Never auto-pulls models.
+  min_ram_gb_for_local_llm: 6
+
+research:
+  max_item_age_days: 21
+  max_candidates_evaluated: 12
+  duplicate_similarity_threshold: 0.55
+  min_sources_recommended: 2
+  max_page_chars: 12000
+  http_timeout_seconds: 20
+  max_download_bytes: 2000000
+  contact_env: AUTOTUBE_CONTACT
+  wikipedia_enabled: true
+  trend:
+    enabled: true                # real Wikimedia pageview data (not guessed)
+    spike_ratio_threshold: 1.6   # last 3 days vs prior 14-day average
+
+scoring:
+  # Relative weights of each criterion in the total (0-10) score.
+  weights:
+    curiosity: 1.4
+    audience_interest: 1.2
+    visual_potential: 1.2
+    scientific_importance: 1.0
+    mystery: 1.0
+    emotional_impact: 0.8
+    relevance: 1.0
+    originality: 1.1
+    competition: 0.6      # 10 = little competition; excluded when unknown
+    available_visuals: 1.0
+    retention_potential: 1.3
+  min_total_score: 4.5
+
+content:
+  words_per_minute: 150          # documentary pacing
+  duration_tolerance: 0.18
+  max_hook_words: 18
+  max_sentence_words: 26
+  banned_phrases:
+    - "welcome to our channel"
+    - "hello everyone"
+    - "hey guys"
+    - "don't forget to subscribe"
+    - "smash that like"
+    - "in this video"
+  scene_count_min: 5
+  scene_count_max: 8
+  max_script_attempts: 3
+
+video:
+  preset: auto                   # auto | low | medium | high
+  fps: 30
+  presets:
+    low:    { width: 720,  height: 1280, crf: 26, x264_preset: veryfast }
+    medium: { width: 1080, height: 1920, crf: 23, x264_preset: veryfast }
+    high:   { width: 1080, height: 1920, crf: 20, x264_preset: medium }
+  transition_seconds: 0.35
+  transitions: [fade, dissolve, fadeblack]
+  grade: { contrast: 1.04, saturation: 1.08, vignette: true, grain: 3 }
+  intro_lead_seconds: 0.15
+  scene_pause_seconds: 0.30
+  sentence_pause_seconds: 0.22
+  tail_seconds: 0.6
+  use_gpu_encoder: false         # true => h264_nvenc when available
+
+voice:
+  provider_order: [piper, windows_sapi, espeak]
+  speed: 1.0                     # 1.0 = natural. 0.9 = slower. Applied via model/ffmpeg.
+  pitch_semitones: -1.0          # slight deepening (ffmpeg); 0 disables
+  min_audible_db: -38            # mean volume floor for "audible narration"
+  piper:
+    # Download a voice once:  python main.py setup-voice
+    model: "data/voices/en_GB-alan-medium.onnx"
+    executable: "piper"          # or full path / "python -m piper" handled automatically
+  pronunciations:                # word -> spoken form
+    Betelgeuse: "Betel juice"
+    Sagittarius: "Sadji tary us"
+    JWST: "James Webb Space Telescope"
+    Phobos: "Foe boss"
+    "ΛCDM": "Lambda C D M"
+
+visuals:
+  # Tried in this order PER SCENE; the last item is always the safety net.
+  provider_order: [video_ai, stock_video, stock_image, image_ai, procedural]
+  max_stock_candidates: 8
+  avoid_reusing_assets: true
+  video_ai:
+    enabled: false               # no free hosted API is assumed — see docs/PROVIDERS.md
+    command: ""                  # e.g. 'python my_wan_script.py --prompt {prompt} --out {output}'
+    timeout_seconds: 900
+    paid: false
+  stock:
+    pexels:  { enabled: true,  api_key_env: PEXELS_API_KEY }
+    pixabay: { enabled: true,  api_key_env: PIXABAY_API_KEY }
+    nasa_images: { enabled: true }   # public NASA image library, no key
+  image_ai:
+    enabled: false
+    type: automatic1111          # AUTOMATIC1111 / Forge with --api
+    url_env: SD_WEBUI_URL
+    default_url: "http://127.0.0.1:7860"
+    steps: 22
+    timeout_seconds: 300
+  procedural:
+    internal_scale: 0.5          # render at half-res then upscale (CPU friendly)
+
+audio:
+  music:
+    enabled: true                # only tracks that have license info are used
+    volume: 0.22
+    fade_in: 1.0
+    fade_out: 2.0
+  ambient: { enabled: true, volume: 0.12 }
+  sfx: { enabled: true, volume: 0.35 }
+  ducking: { threshold: 0.04, ratio: 8, attack_ms: 20, release_ms: 450 }
+  target_lufs: -14
+  true_peak_db: -1.5
+
+subtitles:
+  burn_in: true
+  font: auto                     # auto = Arial (Win) / Helvetica (mac) / DejaVu Sans (Linux)
+  font_size_ratio: 0.052         # fraction of video height
+  max_words_per_caption: 4
+  max_chars_per_line: 22
+  uppercase: true
+  primary_color: "#FFFFFF"
+  outline_color: "#000000"
+  outline_ratio: 0.0035
+  shadow_ratio: 0.0015
+  # Keep captions above YouTube's bottom UI (title/channel/buttons).
+  bottom_margin_percent: 32
+  side_margin_percent: 9
+  min_caption_seconds: 0.45
+
+thumbnail:
+  enabled: true
+  shorts_size: [1080, 1920]
+  long_size: [1280, 720]
+  font_path: ""                  # optional .ttf/.otf; auto-detected otherwise
+  max_words: 5
+  accent_color: "#FFB020"
+
+seo:
+  title_max_chars: 90
+  title_options: 5
+  max_hashtags: 3
+  max_tags_chars: 450
+  include_ai_disclosure_in_description: true
+  banned_title_phrases: ["you won't believe", "shocking", "nasa is hiding", "they don't want you", "gone wrong"]
+
+qc:
+  min_total_score: 6.5
+  duration_min_seconds: 28
+  duration_max_seconds: 60
+  aspect_ratio: 0.5625
+  aspect_tolerance: 0.02
+  max_silence_seconds: 2.5
+  silence_noise_db: -45
+  max_black_ratio: 0.04
+  min_narration_mean_db: -38
+  max_clipping_peak_db: -0.1
+  require_license_records: true
+  require_burned_subtitles: true
+
+budget:
+  monthly_limit_inr: 0
+  allow_paid_providers: false
+  currency: INR
+  note: "Excludes electricity, internet, storage and hardware."
+
+notifications:
+  terminal: true
+  webhook:
+    enabled: false
+    url_env: NOTIFY_WEBHOOK_URL
+
+dashboard:
+  host: "127.0.0.1"
+  port: 8787
+  token_env: DASHBOARD_TOKEN
+  allowed_hosts: ["localhost", "127.0.0.1", "[::1]"]
+
+youtube:
+  client_secrets_env: YOUTUBE_CLIENT_SECRETS
+  token_file: youtube_token.json
+  category_id: "28"              # Science & Technology
+  made_for_kids: false
+  # auto = true only when AI image/video generators were used for visuals.
+  contains_synthetic_media: auto
+  default_language: en
+  upload_chunk_mb: 8
+  request_monetary_scope: false  # only enable if your channel is monetized
+
+analytics:
+  lookback_days: 90
+  retention_snapshot: true
+
+monetization:
+  # Thresholds change. Verify at https://support.google.com/youtube/answer/72851
+  tiers:
+    - { name: "Fan funding / early access", subscribers: 500,  watch_hours_365d: 3000, uploads_90d: 3 }
+    - { name: "YouTube Partner Program (ads)", subscribers: 1000, watch_hours_365d: 4000 }
+    - { name: "YPP via Shorts views", subscribers: 1000, shorts_views_90d: 10000000 }
+
+optimizer:
+  min_samples_for_conclusion: 5
+  weight_min: 0.8
+  weight_max: 1.25
+  max_weight_step: 0.05
+  auto_apply_topic_weights: true     # only topic weights; everything else = recommendation

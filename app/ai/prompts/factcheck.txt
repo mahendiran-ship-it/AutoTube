@@ -1,0 +1,20 @@
+You are a strict fact-checker. Compare each narration sentence to the VERIFIED FACTS and SOURCE EXCERPTS.
+Use only those materials; do not use outside knowledge.
+
+VERIFIED FACTS:
+<<facts>>
+
+SOURCE EXCERPTS:
+<<excerpts>>
+
+NARRATION SENTENCES (index: text):
+<<sentences>>
+
+For every sentence give a verdict:
+ "supported"   = clearly backed by the facts/sources,
+ "hedged_ok"   = uncertain claim properly phrased as uncertain,
+ "unsupported" = states something not found in the facts/sources,
+ "overstated"  = states a theory/speculation as certain, or exaggerates,
+ "opinion"     = rhetorical/atmospheric sentence that makes no factual claim.
+
+Return ONLY JSON: {"verdicts":[{"index":0,"verdict":"supported","note":"short reason"}]}

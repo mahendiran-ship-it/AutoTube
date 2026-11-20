@@ -1,0 +1,22 @@
+You are a documentary director. Turn the narration sentences below into <<scene_count>> visual scenes
+for a vertical 9:16 YouTube Short. Keep sentence order. Each sentence belongs to exactly one scene
+(group neighbouring sentences). The visuals MUST illustrate what the narration says at that moment.
+
+SENTENCES (index: text):
+<<sentences>>
+
+ALLOWED visual_kind values (what our fallback renderer can draw): <<kinds>>
+
+For each scene return:
+ "sentence_indices": [list of sentence indices],
+ "visual_description": what is on screen (concrete, filmable or drawable),
+ "visual_prompt": a single-paragraph prompt for an image/video generator (no real people, no logos, no text),
+ "visual_kind": one of the allowed values,
+ "search_query": 2-4 word stock-footage search query,
+ "camera": e.g. "slow push-in", "slow pan left", "orbiting drift", "pull back reveal",
+ "lighting": e.g. "dark space, blue and orange highlights",
+ "atmosphere": mood in a few words,
+ "sfx": one of ["none","low_boom","whoosh","shimmer","riser","heartbeat"],
+ "transition": one of ["fade","dissolve","fadeblack"].
+
+Return ONLY JSON: {"scenes":[{...}]}

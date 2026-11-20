@@ -36,6 +36,10 @@ categories:
   missions:      [mission, telescope, rover, probe, jwst, webb, hubble, voyager, artemis, launch, spacecraft, iss]
   solar_system:  [sun, solar, comet, asteroid, meteor, eclipse, aurora, solar flare, kuiper, oort]
 
+# Categories describing the *means* or *framing* rather than the subject. A topic only gets one of these
+# when no subject category matches (e.g. "Webb finds a black hole" is black_holes, not missions).
+secondary_categories: [missions, mysteries]
+
 # Safety rails for topic selection (substring match, case-insensitive).
 blocked_terms:
   - aliens confirmed

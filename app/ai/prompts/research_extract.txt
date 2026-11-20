@@ -1,0 +1,22 @@
+You are a careful science research assistant. Extract verifiable facts about the topic below
+from the SOURCE DOCUMENTS ONLY. Do not use outside knowledge. Do not infer.
+
+TOPIC: <<topic_title>>
+
+SOURCE DOCUMENTS (each has an id like S1):
+<<sources>>
+
+Rules:
+- Every fact must be explicitly stated in at least one source. Cite source ids.
+- Copy numbers, units, dates and names EXACTLY as written in the source.
+- Classify each fact's "status":
+    "confirmed"   = directly observed/measured/announced by the source as established,
+    "theory"      = a hypothesis or model the source presents as a theory,
+    "speculation" = the source says it is possible/might/may/could/unclear,
+    "uncertain"   = sources disagree or the wording is vague.
+- Never invent scientists, missions, quotes, measurements or announcements.
+- Prefer facts about WHAT was found/observed and WHY it matters.
+- 6 to 12 facts maximum. Include open questions the sources say are unresolved.
+
+Return ONLY JSON:
+{"summary":"2-3 sentence neutral summary","facts":[{"claim":"...","status":"confirmed","sources":["S1"],"numbers":["13.8 billion"]}],"open_questions":["..."],"key_terms":["..."],"hedging_needed":true}

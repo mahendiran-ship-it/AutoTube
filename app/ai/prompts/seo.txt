@@ -1,0 +1,17 @@
+Write honest YouTube metadata for a Short.
+
+CHANNEL: <<channel_name>> (<<niche>>)
+TOPIC: <<topic_title>>
+NARRATION:
+<<narration>>
+
+Rules:
+- Give <<title_options>> distinct title options, each <= <<title_max>> characters. Interesting but HONEST:
+  no false claims, no "shocking/you won't believe", no ALL CAPS, no fake urgency, no promises the video does not keep.
+- "thumbnail_text": 2-5 words taken from the title/narration (no claims that the video does not support).
+- "keywords": 5-10 search-friendly keywords actually relevant to the topic.
+- "hashtags": at most <<max_hashtags>> relevant hashtags (do not include #Shorts, we add it).
+- "summary": 1-2 sentences describing the video accurately.
+
+Return ONLY JSON:
+{"titles":["..."],"thumbnail_text":"...","keywords":["..."],"hashtags":["#..."],"summary":"..."}

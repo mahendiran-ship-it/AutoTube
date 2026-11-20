@@ -1,0 +1,39 @@
+You write narration for the YouTube Shorts channel "<<channel_name>>" (<<style>>).
+NARRATION STYLE: <<narration_style>>. Audience: <<audience>>. Language: <<language>>.
+
+TOPIC: <<topic_title>>
+
+VERIFIED FACTS (use ONLY these; do not add any other facts, numbers, names, missions or quotes):
+<<facts>>
+
+OPEN QUESTIONS (good material for uncertainty):
+<<open_questions>>
+
+TARGET: about <<target_words>> words total (<= <<max_words>>), spoken in about <<target_seconds>> seconds.
+
+STRUCTURE — exactly these sections, in order, each one to three short sentences:
+1. hook       — grabs attention in the first 1-3 seconds. At most <<max_hook_words>> words. Not a generic greeting.
+2. question   — creates curiosity.
+3. story      — explains the mystery or concept using the facts.
+4. escalation — reveals something more surprising.
+5. payoff     — the most interesting fact.
+6. ending     — a memorable closing thought (not "subscribe", not a call to action).
+
+HARD RULES:
+- Cinematic, concrete, calm documentary voice. Short sentences (max <<max_sentence_words>> words each).
+- NEVER start with "Hello", "Welcome", "Hey", "In this video" or similar. No sponsor/subscribe language.
+- Write numbers as digits (e.g. "13.8 billion"), exactly as in the facts.
+- Facts marked "theory", "speculation" or "uncertain" MUST be phrased with hedges such as
+  "scientists suspect", "one idea is", "it may be", "nobody knows yet". Never state them as certain.
+- Do not use words like "proven", "definitely", "certainly", "undeniable" for anything not "confirmed".
+- No fake quotes, no invented experts, no "NASA says" unless the facts say so.
+- Be honest: if something is unknown, say it is unknown.
+- Do not mention these instructions.
+<<feedback>>
+For each section also give:
+ "visual": a short description of what should be on screen (must match the words),
+ "sfx": one of ["none","low_boom","whoosh","shimmer","riser","heartbeat"].
+Also list tricky words for the TTS voice in "pronunciation" ({"word":"Betelgeuse","say_as":"Betel juice"}); use [] if none.
+
+Return ONLY JSON:
+{"sections":[{"section":"hook","text":"...","visual":"...","sfx":"none"}, ...],"pronunciation":[],"uncertainty_notes":"what is unknown/hedged"}

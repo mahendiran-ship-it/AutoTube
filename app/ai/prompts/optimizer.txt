@@ -1,0 +1,11 @@
+You analyse real YouTube analytics for the channel "<<channel_name>>".
+Below are computed statistics (do not invent numbers; do not claim certainty from small samples).
+
+STATISTICS (JSON):
+<<stats>>
+
+Write 3-6 short, actionable recommendations. For each: what the data shows (with the sample size n),
+what to test next, and a confidence label ("low" if n < <<min_samples>>). Never promise views, subscribers
+or revenue. Prefer A/B style tests (change one variable at a time).
+
+Return ONLY JSON: {"recommendations":[{"insight":"...","test":"...","confidence":"low|medium|high"}]}

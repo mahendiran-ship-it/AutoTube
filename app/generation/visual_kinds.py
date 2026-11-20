@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 
-VISUAL_KINDS = ["starfield", "nebula", "planet", "black_hole", "galaxy", "orbit"]
+VISUAL_KINDS = ["starfield", "nebula", "planet", "black_hole", "galaxy", "orbit", "timeline"]
 
 _KEYWORDS: dict[str, list[str]] = {
     "black_hole": ["black hole", "event horizon", "singularity", "accretion", "quasar", "hawking",
@@ -16,13 +16,14 @@ _KEYWORDS: dict[str, list[str]] = {
                "europa", "titan", "enceladus", "surface", "atmosphere", "world"],
     "orbit": ["orbit", "orbits", "orbiting", "moon", "eclipse", "solar system", "comet", "asteroid",
               "trajectory", "revolve", "satellite", "tidal", "gravity pulls"],
+    "timeline": ["years ago", "timeline", "big bang", "since the beginning", "age of the universe"],
 }
-_PRIORITY = ["black_hole", "galaxy", "nebula", "planet", "orbit"]
+_PRIORITY = ["black_hole", "galaxy", "nebula", "planet", "orbit", "timeline"]
 
 # What stock-footage search should look for per kind.
 SEARCH_HINTS = {
     "black_hole": "black hole space", "galaxy": "galaxy stars", "nebula": "nebula space",
-    "planet": "planet space", "orbit": "orbit planet moon", "starfield": "stars night sky",
+    "planet": "planet space", "orbit": "orbit planet moon", "timeline": "universe space", "starfield": "stars night sky",
 }
 
 

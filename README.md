@@ -75,7 +75,7 @@ You need: **Python 3.10+**, **FFmpeg** (with `ffprobe`) and, for real scripts, a
 
 ### Linux / macOS
 ```bash
-git clone <your-repo-url> autotube-ai && cd autotube-ai
+git clone https://github.com/mahendiran-ship-it/AutoTube.git && cd autotube-ai
 bash scripts/install_linux.sh          # venv + dependencies + database
 . .venv/bin/activate
 python main.py setup-voice             # one-time free voice download
@@ -85,7 +85,7 @@ python main.py doctor                  # tells you what is ready / missing
 
 ### Windows (PowerShell)
 ```powershell
-git clone <your-repo-url> autotube-ai; cd autotube-ai
+git clone https://github.com/mahendiran-ship-it/AutoTube.git && cd autotube-ai
 powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
 .\.venv\Scripts\python.exe main.py setup-voice
 .\.venv\Scripts\python.exe main.py doctor

@@ -1,0 +1,19 @@
+# Copy this file to assets/music/library.yaml and list ONLY tracks you have the right to use.
+# A track without a license name is IGNORED. The pipeline works without any music.
+#
+# Good free sources (check each track's own license!):
+#   - YouTube Audio Library (free for use in YouTube videos; per-track attribution rules)
+#   - Pixabay Music (Pixabay Content License)
+#   - Free Music Archive / Incompetech (CC BY: attribution REQUIRED -> set attribution_required: true)
+#
+# Put the audio files in this folder (assets/music/) and reference them by filename.
+tracks:
+  - file: example_ambient_drone.mp3
+    title: "Example Ambient Drone"
+    author: "Example Artist"
+    license: "Pixabay Content License"
+    license_url: "https://pixabay.com/service/license-summary/"
+    attribution_required: false
+    attribution_text: ""
+    source_url: "https://pixabay.com/music/"
+    moods: [space, ambient, cinematic]

@@ -46,7 +46,14 @@ class OpenAICompatibleProvider(LLMProvider):
                 body.pop("response_format", None)
                 r = requests.post(f"{self.base_url}/chat/completions", json=body, headers=self._headers(),
                                   timeout=self.timeout)
-            r.raise_for_status()
+            if r.status_code >= 400:
+                detail = ""
+                try:
+                    detail = (r.json().get("error") or {}).get("message", "")
+                except ValueError:
+                    detail = r.text[:200]
+                hint = " (check the model name in config/settings.yaml)" if r.status_code in (400, 404) else ""
+                raise ProviderUnavailable(f"{self.name}: HTTP {r.status_code} - {detail[:200]}{hint}")
             data = r.json()
             text = data["choices"][0]["message"]["content"] or ""
         except requests.RequestException as e:

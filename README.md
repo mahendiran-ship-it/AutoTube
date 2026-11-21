@@ -120,7 +120,7 @@ python main.py setup-voice
 python main.py set-key GROQ_API_KEY     # paste your key when asked (input is hidden)
 python main.py use-provider groq        # turns it on and makes it the first choice
 ```
-Get a key at <https://console.groq.com/keys>. Model names change — if `doctor` complains, pick a current one from
+Get a key at <https://console.groq.com/keys>. The default model is `openai/gpt-oss-120b`. Model names change — if you see `404 Not Found`, pick a current one from
 <https://console.groq.com/docs/models> and run `python main.py use-provider groq --model THE-MODEL-NAME`.
 
 **Option B — Local Ollama (free, private, needs ~5 GB + a decent PC)**

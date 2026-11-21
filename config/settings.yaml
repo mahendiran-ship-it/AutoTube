@@ -74,7 +74,7 @@ ai:
       type: openai_compatible
       enabled: false
       base_url: "https://api.groq.com/openai/v1"
-      model: "llama-3.3-70b-versatile" # model names change - check https://console.groq.com/docs/models
+      model: "openai/gpt-oss-120b"     # model names change - check https://console.groq.com/docs/models
       api_key_env: GROQ_API_KEY
       timeout_seconds: 120
       paid: false                      # set true if you are on a paid plan (then the budget must allow it)

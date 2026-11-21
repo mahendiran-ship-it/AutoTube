@@ -134,6 +134,11 @@ def create_app(svc, scheduler, pipeline_factory) -> FastAPI:
         cfg.save_local_override(updates)
         return {"saved": True}
 
+    @app.get("/api/keys")
+    def keys():
+        from app.core.secrets import key_status
+        return {"keys": key_status(cfg), "how_to": "Keys are never entered in the browser. Run: python main.py set-key NAME"}
+
     @app.get("/api/config/channel")
     def channel_cfg():
         return cfg.get("channel")

@@ -143,7 +143,7 @@ async function Analytics() {
 }
 
 async function Settings() {
-  const [c, yt] = await Promise.all([api("/config"), api("/youtube/status")]);
+  const [c, yt, ks] = await Promise.all([api("/config"), api("/youtube/status"), api("/keys")]);
   const ch = c.channel || {}, sc = c.schedule || {};
   $("#view").innerHTML = `<h2>Settings</h2>
   <div class="card"><h3>Channel</h3><div class="grid">
@@ -162,7 +162,8 @@ async function Settings() {
    ${yt.flow_error ? `<div class="small" style="color:var(--bad)">${esc(yt.flow_error)}</div>` : ""}
    <div class="row"><button id="yc">Connect YouTube</button><button class="sec" id="yd">Disconnect</button><button class="sec" id="yr">Refresh upload statuses</button></div></div>
   <div class="card"><h3>Test providers</h3><div class="row"><button class="sec" id="pc">Check AI + voice now</button></div><pre id="pcout" style="display:none"></pre>
-   <div class="small muted">API keys (Pexels, Pixabay, …) are never entered here – put them in .env.</div></div>`;
+   <h3>API keys</h3>${ks.keys.map(k => `<div>${pill(k.set ? "ok" : "warn")} <b>${esc(k.name)}</b> <span class="muted small">${esc(k.purpose)}</span></div>`).join("")}
+   <div class="small muted">${esc(ks.how_to)} (values are never shown or stored in the dashboard).</div></div>`;
   $("#save").onclick = () => act("Settings saved", () => api("/config", "POST", {
     channel: {name: $("#c_name").value, niche: $("#c_niche").value, language: $("#c_lang").value, timezone: $("#c_tz").value, style: $("#c_style").value, audience: $("#c_aud").value},
     pipeline: {publishing_mode: $("#mode").value},

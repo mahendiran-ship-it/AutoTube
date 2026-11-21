@@ -50,7 +50,7 @@ automation:
 
 ai:
   # Order matters: first healthy provider wins, the rest are fallbacks.
-  fallback_order: [ollama, llamacpp]
+  fallback_order: [ollama, llamacpp, groq]
   max_attempts_per_call: 2     # total tries across providers (no endless switching)
   health_cache_seconds: 60
   temperature: 0.7
@@ -70,6 +70,14 @@ ai:
       api_key_env: LLM_API_KEY
       timeout_seconds: 300
       paid: false
+    groq:                              # cloud, OpenAI-compatible. Enable with: python main.py use-provider groq
+      type: openai_compatible
+      enabled: false
+      base_url: "https://api.groq.com/openai/v1"
+      model: "llama-3.3-70b-versatile" # model names change - check https://console.groq.com/docs/models
+      api_key_env: GROQ_API_KEY
+      timeout_seconds: 120
+      paid: false                      # set true if you are on a paid plan (then the budget must allow it)
   # When NO LLM is reachable the pipeline can still produce a *plain,
   # source-extractive* video. It is clearly flagged and never auto-published.
   allow_extractive_fallback: true

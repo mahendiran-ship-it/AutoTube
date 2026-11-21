@@ -179,6 +179,45 @@ def cmd_optimize(a):
     return 0
 
 
+def cmd_keys(a):
+    from app.core.secrets import key_status
+    cfg = load()
+    for k in key_status(cfg):
+        print(f"{'SET    ' if k['set'] else 'not set'}  {k['name']:<20} {k['purpose']}")
+    print("\nAdd one with:  python main.py set-key NAME   (input is hidden; saved only to .env)")
+    return 0
+
+
+def cmd_set_key(a):
+    import getpass
+
+    from app.core.secrets import set_env_key
+    value = a.value or getpass.getpass(f"Paste value for {a.name.upper()} (hidden): ")
+    path = set_env_key(ROOT, a.name, value)
+    print(f"saved {a.name.upper()} to {path} (never committed; the file is git-ignored)")
+    return 0
+
+
+def cmd_use_provider(a):
+    cfg = load()
+    prov = (cfg.get("ai.providers") or {})
+    if a.name not in prov:
+        print(f"unknown provider '{a.name}'. Available: {', '.join(prov)}")
+        return 1
+    upd = {"ai": {"providers": {a.name: {"enabled": True}}}}
+    if a.model:
+        upd["ai"]["providers"][a.name]["model"] = a.model
+    order = [a.name] + [n for n in (cfg.get("ai.fallback_order") or []) if n != a.name]
+    upd["ai"]["fallback_order"] = order
+    cfg.save_local_override(upd)
+    env = prov[a.name].get("api_key_env")
+    print(f"'{a.name}' enabled and set as first choice (order: {', '.join(order)}).")
+    if env and not cfg.env(env):
+        print(f"!! {env} is not set yet. Run:  python main.py set-key {env}")
+    print("Check it with:  python main.py doctor")
+    return 0
+
+
 def cmd_serve(a):
     import uvicorn
 
@@ -229,6 +268,13 @@ def build_parser():
     add("doctor", cmd_doctor, "check FFmpeg, AI, voice, YouTube, config")
     s = add("setup-voice", cmd_setup_voice, "download the Piper voice model")
     s.add_argument("--voice")
+    add("keys", cmd_keys, "show which API keys are set (never prints values)")
+    s = add("set-key", cmd_set_key, "save an API key to .env (hidden input)")
+    s.add_argument("name")
+    s.add_argument("--value", help="avoid: visible in shell history; omit to be prompted")
+    s = add("use-provider", cmd_use_provider, "enable an AI provider and make it the first choice")
+    s.add_argument("name")
+    s.add_argument("--model")
     add("check-sources", cmd_check_sources, "fetch all RSS sources and report which work")
     s = add("discover", cmd_discover, "discover topics (and optionally score/select)")
     s.add_argument("--select", action="store_true")

@@ -17,7 +17,7 @@ Python 3.10+ · FastAPI dashboard · SQLite · FFmpeg · Ollama / llama.cpp · P
 ## Table of contents
 1. [What it does](#what-it-does)
 2. [Honest status — read this first](#honest-status--read-this-first)
-3. [Quick start](#quick-start)
+3. [Quick start (install, API keys, AI model)](#quick-start)
 4. [First-run checklist](#first-run-checklist)
 5. [Using the dashboard](#using-the-dashboard)
 6. [Command line](#command-line)
@@ -71,33 +71,89 @@ This project follows one rule: **never pretend**. Concretely:
 
 ## Quick start
 
-You need: **Python 3.10+**, **FFmpeg** (with `ffprobe`) and, for real scripts, a local LLM (**Ollama** recommended).
+### Step 0 — What you need installed first
 
-### Linux / macOS
+| Need | Why | How |
+|---|---|---|
+| **Python 3.10 or newer** | runs the app | <https://www.python.org/downloads/> (Windows: tick **"Add python.exe to PATH"**). Check: `python --version` |
+| **Git** | to download the project | <https://git-scm.com/downloads> |
+| **FFmpeg** (includes `ffprobe`) | builds the video files | Windows: `winget install Gyan.FFmpeg` · Ubuntu/Debian: `sudo apt install ffmpeg` · macOS: `brew install ffmpeg`. Reopen the terminal, check: `ffmpeg -version` |
+| **An AI model** (pick one) | writes the script | **A)** free cloud API, e.g. Groq — no big download, see [Step 4](#step-4--connect-an-ai-model-pick-one) · **B)** local Ollama — free, ~5 GB model |
+
+### Step 1 — Download the project
 ```bash
-git clone https://github.com/mahendiran-ship-it/AutoTube.git && cd autotube-ai
-bash scripts/install_linux.sh          # venv + dependencies + database
-. .venv/bin/activate
-python main.py setup-voice             # one-time free voice download
-python main.py doctor                  # tells you what is ready / missing
-./start.sh                             # dashboard → http://127.0.0.1:8787
+git clone https://github.com/mahendiran-ship-it/AutoTube.git
+cd AutoTube
 ```
 
-### Windows (PowerShell)
-```powershell
-git clone https://github.com/mahendiran-ship-it/AutoTube.git && cd autotube-ai
-powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1
-.\.venv\Scripts\python.exe main.py setup-voice
-.\.venv\Scripts\python.exe main.py doctor
-start.bat                              # dashboard → http://127.0.0.1:8787
-```
+### Step 2 — Install the Python requirements
 
-### Install the free local AI (recommended)
+**Easy way (recommended)** — one script does everything below for you:
+
+| System | Command |
+|---|---|
+| Windows (PowerShell) | `powershell -ExecutionPolicy Bypass -File scripts\install_windows.ps1` |
+| Linux / macOS | `bash scripts/install_linux.sh` |
+
+**Manual way** — the same thing, step by step:
+
+| | Windows (PowerShell) | Linux / macOS |
+|---|---|---|
+| Create a private Python environment | `python -m venv .venv` | `python3 -m venv .venv` |
+| Activate it | `.\.venv\Scripts\activate` | `source .venv/bin/activate` |
+| **Install the requirements** | `pip install -r requirements.txt` | `pip install -r requirements.txt` |
+| Install the free voice engine | `pip install piper-tts` | `pip install piper-tts` |
+| Create folders, `.env` file and database | `python main.py init` | `python main.py init` |
+
+> Every time you open a new terminal, activate the environment again (the "Activate it" row) before running `python main.py ...`.
+> `start.bat` / `start.sh` do this for you.
+
+### Step 3 — Download the voice (one time, free)
 ```bash
-# https://ollama.com  (Windows/macOS installer, or on Linux: curl -fsSL https://ollama.com/install.sh | sh)
-ollama pull llama3.1:8b                # ~5 GB; any chat model works — change ai.providers.ollama.model
+python main.py setup-voice
 ```
-No LLM? The system still runs with a limited, **flagged "extractive" script** that is never auto-published.
+
+### Step 4 — Connect an AI model (pick one)
+
+**Option A — Groq cloud API (no local model, fast, has a free tier)**
+```bash
+python main.py set-key GROQ_API_KEY     # paste your key when asked (input is hidden)
+python main.py use-provider groq        # turns it on and makes it the first choice
+```
+Get a key at <https://console.groq.com/keys>. Model names change — if `doctor` complains, pick a current one from
+<https://console.groq.com/docs/models> and run `python main.py use-provider groq --model THE-MODEL-NAME`.
+
+**Option B — Local Ollama (free, private, needs ~5 GB + a decent PC)**
+```bash
+# install from https://ollama.com, then:
+ollama pull llama3.1:8b
+```
+No AI at all? The app still runs with a limited, **flagged "extractive" script** that is never auto-published.
+
+Any other OpenAI-compatible service (OpenRouter, Together, LM Studio…) works through the `llamacpp` entry in `config/settings.yaml`
+(`base_url`, `model`; key via `python main.py set-key LLM_API_KEY`).
+
+### Step 5 — Check everything
+```bash
+python main.py doctor
+```
+Every line should say `OK` (YouTube can wait until later). The message beside any `DOWN`/`MISSING` line tells you the fix.
+
+### Step 6 — Start the dashboard
+```bash
+python main.py serve        # or double-click start.bat (Windows) / run ./start.sh
+```
+Open <http://127.0.0.1:8787>.
+
+### API keys — how they are handled
+
+* Keys are stored **only in the `.env` file** in the project folder (git-ignored, permission 600 on Linux/macOS) — never in `config/*.yaml`, the database, logs, the dashboard or GitHub.
+* Add or change one: `python main.py set-key NAME` (hidden prompt). See which are set: `python main.py keys` (never prints values).
+  You can also edit `.env` by hand (copy of `.env.example`).
+* The dashboard (Settings → API keys) only shows **set / not set**; it deliberately cannot read or accept key values.
+* Available keys: `GROQ_API_KEY`, `LLM_API_KEY`, `PEXELS_API_KEY` (free), `PIXABAY_API_KEY` (free), `DASHBOARD_TOKEN`, `NOTIFY_WEBHOOK_URL`. All are optional.
+* Never paste a key into a chat, issue or commit. If you leak one, revoke it at the provider and create a new one.
+* YouTube uses a different mechanism (an OAuth client file, not a key) — see [docs/YOUTUBE_SETUP.md](docs/YOUTUBE_SETUP.md).
 
 ---
 
@@ -106,7 +162,7 @@ No LLM? The system still runs with a limited, **flagged "extractive" script** th
 1. `python main.py doctor` — fix anything marked `DOWN`/`MISSING` (FFmpeg, AI provider, voice).
 2. `python main.py smoke-test` — renders a fixture video through the real pipeline (no network, no AI, **never uploaded**). Open `output/videos/` to see it.
 3. `python main.py check-sources` — shows which RSS feeds respond from your network. Disable dead ones in `config/sources.yaml`.
-4. Optional free API keys in `.env` (copy of `.env.example`): `PEXELS_API_KEY`, `PIXABAY_API_KEY`. NASA media needs no key.
+4. Optional free stock keys: `python main.py set-key PEXELS_API_KEY` and `PIXABAY_API_KEY`. NASA media needs no key.
 5. Dashboard → **Settings**: set channel name/niche/style/timezone and your schedule.
 6. Connect YouTube — follow [docs/YOUTUBE_SETUP.md](docs/YOUTUBE_SETUP.md) (≈10 minutes, free).
 7. Dashboard → **Topics → Discover**, then **Run full pipeline now**. In the default `REVIEW` mode it stops for your approval before anything is uploaded.
@@ -138,6 +194,9 @@ Settings you save are written to `config/local.yaml` (git-ignored). Secrets are 
 python main.py init            create folders, .env, database
 python main.py doctor          health check with fixes
 python main.py setup-voice     download the Piper voice
+python main.py keys            show which API keys are set
+python main.py set-key NAME    save an API key to .env (hidden prompt)
+python main.py use-provider NAME [--model M]   enable an AI provider (groq, ollama, llamacpp)
 python main.py check-sources   test every RSS feed
 python main.py discover [--select]
 python main.py smoke-test      real render, never uploaded
@@ -223,7 +282,7 @@ To run a different channel: edit `config/channel.yaml` (or Settings in the dashb
 ## Project layout
 
 ```
-autotube-ai/
+AutoTube/
 ├─ main.py                  CLI
 ├─ config/                  settings.yaml · channel.yaml · sources.yaml
 ├─ app/

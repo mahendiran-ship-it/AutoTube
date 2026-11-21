@@ -26,7 +26,8 @@ python -m pip install piper-tts || echo "(piper-tts could not be installed; see 
 python main.py init
 echo
 echo "Next steps:"
-echo "  1. (optional) install Ollama: https://ollama.com  then: ollama pull llama3.1:8b"
+echo "  1. AI model: either  python main.py set-key GROQ_API_KEY && python main.py use-provider groq"
+echo "     or install Ollama (https://ollama.com) and run: ollama pull llama3.1:8b"
 echo "  2. python main.py setup-voice        # downloads the free Piper voice"
 echo "  3. python main.py doctor             # shows exactly what is ready / missing"
 echo "  4. ./start.sh                        # opens the dashboard at http://127.0.0.1:8787"

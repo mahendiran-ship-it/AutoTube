@@ -194,3 +194,26 @@ def test_validate_url_allowlist_and_dns():
     with pytest.raises(UnsafeURL):   # public-looking name that resolves to a private IP
         validate_url("https://rebind.example/x", resolver=lambda h: ["192.168.1.10"])
     assert validate_url("https://good.example/x", resolver=lambda h: ["93.184.216.34"])
+
+
+def test_set_env_key_writes_private_env_and_validates(tmp_path, monkeypatch):
+    monkeypatch.setattr("os.environ", dict(__import__("os").environ))
+    import os
+    import stat
+
+    import pytest as _pt
+
+    from app.core.errors import ConfigurationError
+    from app.core.secrets import set_env_key
+    p = set_env_key(tmp_path, "groq_api_key", "gsk_abc123")
+    assert "GROQ_API_KEY=gsk_abc123" in p.read_text()
+    set_env_key(tmp_path, "GROQ_API_KEY", "gsk_new")
+    txt = p.read_text()
+    assert txt.count("GROQ_API_KEY=") == 1 and "gsk_new" in txt
+    if os.name != "nt":
+        assert stat.S_IMODE(p.stat().st_mode) == 0o600
+    for bad in ("bad name", "X", "1BAD"):
+        with _pt.raises(ConfigurationError):
+            set_env_key(tmp_path, bad, "v")
+    with _pt.raises(ConfigurationError):
+        set_env_key(tmp_path, "OK_KEY", "a\nB=c")

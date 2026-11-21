@@ -20,7 +20,8 @@ if ($LASTEXITCODE -ne 0) { Write-Host "(piper-tts could not be installed; Window
 
 Write-Host ""
 Write-Host "Next steps:"
-Write-Host "  1. (optional) install Ollama: https://ollama.com  then: ollama pull llama3.1:8b"
+Write-Host "  1. AI model: .\.venv\Scripts\python.exe main.py set-key GROQ_API_KEY ; then main.py use-provider groq"
+Write-Host "     or install Ollama (https://ollama.com) and run: ollama pull llama3.1:8b"
 Write-Host "  2. .\.venv\Scripts\python.exe main.py setup-voice"
 Write-Host "  3. .\.venv\Scripts\python.exe main.py doctor"
 Write-Host "  4. start.bat      (dashboard at http://127.0.0.1:8787)"

@@ -31,6 +31,7 @@ pipeline:
   max_stage_retries: 2
   retry_backoff_seconds: 20
   max_qc_repair_attempts: 1
+  upload_retries: 5            # transient 5xx/network errors during upload (quota errors are never retried)
   min_free_disk_gb: 3
   # Videos built from the extractive (no-LLM) fallback are never auto-published.
   block_auto_publish_for_fallback_content: true

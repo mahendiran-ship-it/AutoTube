@@ -52,7 +52,7 @@ class DuplicateDetector:
                  "kw": t.get("keywords") or keywords(t["title"] + " " + (t.get("summary") or ""))}
                 for t in self.repo.topics_for_dedup()]
         for v in self.repo.list_videos(limit=500):
-            if v.get("title") and v["status"] not in ("rejected", "failed"):
+            if v.get("title") and not v.get("is_smoke") and v["status"] not in ("rejected", "failed"):
                 rows.append({"kind": "video", "id": v["id"], "title": v["title"], "kw": keywords(v["title"])})
         return rows
 

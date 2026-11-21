@@ -10,7 +10,7 @@ import traceback
 from typing import Any, Callable
 
 from app.core import notifications as N
-from app.core.errors import (NonRetryableError, PipelinePaused, StageFailed, WaitingForApproval)
+from app.core.errors import (NonRetryableError, PipelinePaused, RepairRequested, StageFailed, WaitingForApproval)
 from app.core.logger import get_logger, redact
 from app.database.database import utcnow
 from app.database.models import TaskStatus as TS
@@ -90,6 +90,9 @@ class TaskManager:
                 return result
             except WaitingForApproval:
                 raise
+            except RepairRequested:
+                self.repo.update_task(tid, status=TS.PENDING.value, error="repair requested")
+                raise
             except PipelinePaused:
                 self.repo.update_task(tid, status=TS.PAUSED.value)
                 raise
@@ -109,6 +112,14 @@ class TaskManager:
                 if self.notifier:
                     self.notifier.notify(N.VIDEO_FAILED, f"Stage '{stage}' failed", msg, "error", video_id)
                 raise StageFailed(stage, msg) from e
+
+    def invalidate(self, run_id: int, stages: list[str]) -> None:
+        """Mark stages as not-done so they run again on resume (e.g. their output files vanished)."""
+        for st in stages:
+            row = self.repo.find_stage(run_id, st)
+            if row and row["status"] == TS.COMPLETED.value:
+                self.repo.update_task(row["id"], status=TS.PENDING.value, result_json=None, ended_at=None,
+                                      error="invalidated: output missing or repair requested")
 
     # ---- approvals ----------------------------------------------------
     def require_approval(self, run_id: int, stage: str, reason: str, video_id: int | None = None) -> None:

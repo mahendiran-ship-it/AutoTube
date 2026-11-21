@@ -60,3 +60,7 @@ class StageFailed(NonRetryableError):
     def __init__(self, stage: str, message: str):
         super().__init__(f"stage '{stage}' failed: {message}")
         self.stage = stage
+
+
+class RepairRequested(Exception):
+    """Control-flow signal: QC asked the orchestrator to re-run media stages once."""

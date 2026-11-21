@@ -263,6 +263,14 @@ youtube:
   default_language: en
   upload_chunk_mb: 8
   request_monetary_scope: false  # only enable if your channel is monetized
+  # Quota figures from the official docs as checked 2026-11-21. They CHANGE - verify at
+  # https://developers.google.com/youtube/v3/determine_quota_cost and your Cloud Console quota page.
+  quota:
+    videos_insert_per_day: 100       # separate per-day bucket for uploads (docs, 2026-11)
+    thumbnails_set_units: 50         # drawn from the shared 10,000-unit daily pool
+    read_call_units: 1               # videos.list / channels.list / playlistItems.list
+    daily_pool_units: 10000          # resets midnight Pacific Time
+    warn_fraction: 0.8
 
 analytics:
   lookback_days: 90
